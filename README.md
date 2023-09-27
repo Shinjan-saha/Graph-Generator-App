@@ -17,4 +17,4 @@ samples, guidance on mobile development, and a full API reference.
 
 
 # Working Example:-
-<img src="./readme-img/graph-working">
+<img src="./readme-img/graph-working.jpg">

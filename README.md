@@ -1,4 +1,4 @@
-# graph
+# Graph Generator App 
 
 A new Flutter project.
 

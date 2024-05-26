@@ -35,9 +35,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('Flutter Plot Example'),
-      // ),
+      appBar: AppBar(
+        title: Text('Graph Generator'),
+      ),
       body: Column(
         children: <Widget>[
           Expanded(
@@ -149,14 +149,22 @@ class _MyHomePageState extends State<MyHomePage> {
       );
 
       final List<LineChartBarData> lineBarsData = [];
+      double minX = double.infinity;
+      double maxX = double.negativeInfinity;
+      double minY = double.infinity;
+      double maxY = double.negativeInfinity;
 
       for (int i = 0; i < curveDataList.length; i++) {
-        final List<FlSpot> spots = curveDataList[i].voltage.asMap().entries.map((entry) {
-          if (entry.value.isNaN) {
-            return FlSpot(entry.key.toDouble(), 0);
-          }
-          return FlSpot(entry.key.toDouble(), curveDataList[i].current[entry.key]);
-        }).toList();
+        final List<FlSpot> spots = [];
+        for (int j = 0; j < curveDataList[i].voltage.length; j++) {
+          final voltage = curveDataList[i].voltage[j];
+          final current = curveDataList[i].current[j];
+          spots.add(FlSpot(voltage, current));
+          if (voltage < minX) minX = voltage;
+          if (voltage > maxX) maxX = voltage;
+          if (current < minY) minY = current;
+          if (current > maxY) maxY = current;
+        }
 
         lineBarsData.add(
           LineChartBarData(
@@ -172,24 +180,22 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _lineChart = LineChart(
           LineChartData(
-            gridData: FlGridData(show: false),
+            gridData: FlGridData(show: true),
             titlesData: FlTitlesData(
               leftTitles: SideTitles(
                 showTitles: true,
                 reservedSize: 30,
                 margin: 12,
-                interval: 2, // Customize the interval for y-axis labels
                 getTitles: (value) {
-                  return value.toStringAsFixed(1); // Format y-axis labels
+                  return value.toStringAsFixed(1);
                 },
               ),
               bottomTitles: SideTitles(
                 showTitles: true,
                 reservedSize: 30,
                 margin: 12,
-                interval: 2, // Customize the interval for x-axis labels
                 getTitles: (value) {
-                  return value.toStringAsFixed(1); // Format x-axis labels
+                  return value.toStringAsFixed(1);
                 },
               ),
             ),
@@ -200,10 +206,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 width: 1,
               ),
             ),
-            minX: 0,
-            maxX: curveDataList.isEmpty ? 10 : curveDataList[0].voltage.length.toDouble() - 1,
-            minY: 0,
-            maxY: 12,
+            minX: minX,
+            maxX: maxX,
+            minY: minY,
+            maxY: maxY,
             lineBarsData: lineBarsData,
           ),
         );
